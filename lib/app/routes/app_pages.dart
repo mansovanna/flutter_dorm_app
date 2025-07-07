@@ -46,7 +46,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SCREEN,
-      page: () => const ScreenView(),
+      page: () => ScreenView(),
       binding: ScreenBinding(),
     ),
     GetPage(
@@ -66,12 +66,12 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.ACCOUNT,
-      page: () => const AccountView(),
+      page: () => AccountView(),
       binding: AccountBinding(),
     ),
     GetPage(
       name: _Paths.LEAVE_HISTORY,
-      page: () => const LeaveHistoryView(),
+      page: () => LeaveHistoryView(),
       binding: LeaveHistoryBinding(),
     ),
     GetPage(

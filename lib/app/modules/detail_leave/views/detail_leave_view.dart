@@ -10,11 +10,12 @@ class DetailLeaveView extends GetView<DetailLeaveController> {
   @override
   Widget build(BuildContext context) {
     final String? status = Get.arguments['status'];
-
+    final int? id = Get.arguments['id'];
+    final int? index = Get.arguments['index'];
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Back',
+          'Back ${id}',
           style: TextStyle(fontSize: 20, fontFamily: AppFonts.poppins),
         ),
       ),
@@ -37,9 +38,9 @@ class DetailLeaveView extends GetView<DetailLeaveController> {
                       height: 200,
                       decoration: BoxDecoration(
                         color:
-                            status == 'Approved'
+                            status == 'approved'
                                 ? AppColor.succss
-                                : status == 'Pending'
+                                : status == 'pending'
                                 ? AppColor.warning.withOpacity(0.8)
                                 : AppColor.danger,
                         borderRadius: BorderRadius.only(
@@ -49,7 +50,7 @@ class DetailLeaveView extends GetView<DetailLeaveController> {
                       ),
                       child: Center(
                         child: Text(
-                          "1",
+                          index.toString(),
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: AppFonts.poppins,

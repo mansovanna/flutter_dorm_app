@@ -1,4 +1,6 @@
 import 'package:final_dromitory/app/constants/constants.dart';
+import 'package:final_dromitory/app/modules/account/controllers/account_controller.dart';
+
 import 'package:final_dromitory/app/modules/account/views/account_view.dart';
 import 'package:final_dromitory/app/modules/home/views/home_view.dart';
 import 'package:final_dromitory/app/modules/rules/views/rules_view.dart';
@@ -12,11 +14,19 @@ import 'package:get/get.dart';
 import '../controllers/screen_controller.dart';
 
 class ScreenView extends GetView<ScreenController> {
-  const ScreenView({super.key});
+  ScreenView({super.key}) {
+    // Ensure AccountController is registered before using Get.find
+    if (!Get.isRegistered<AccountController>()) {
+      Get.put(AccountController());
+    }
+  }
+  final splashScreen = Get.find<AccountController>();
+  final baseUrl = kBaseUrl;
 
   @override
   Widget build(BuildContext context) {
     // final homeController = Get.put(HomeController());
+
     final List<Map<String, dynamic>> _navItems = [
       {'icon': SvgIcon.home, 'label': 'ទំព័រដើម'},
       {'icon': SvgIcon.time, 'label': 'ប្រវត្តិស្នាក់នៅ'},
@@ -25,9 +35,13 @@ class ScreenView extends GetView<ScreenController> {
       {
         'iconWidget': CircleAvatar(
           radius: 12,
-          backgroundImage: NetworkImage(
-            'https://www.shutterstock.com/image-photo/smiling-african-american-millennial-businessman-600nw-1437938108.jpg',
-          ),
+          backgroundImage:
+              splashScreen.imageUrl.isNotEmpty
+                  ? NetworkImage(
+                    '$baseUrlImage/${splashScreen.imageUrl.string}',
+                  )
+                  : const AssetImage('assets/images/profile.png')
+                      as ImageProvider,
         ),
         'label': 'ប្រវត្តិរូប',
       },

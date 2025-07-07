@@ -1,4 +1,4 @@
-package com.example.final_dromitory
+package com.dorm.app
 
 import io.flutter.embedding.android.FlutterActivity
 

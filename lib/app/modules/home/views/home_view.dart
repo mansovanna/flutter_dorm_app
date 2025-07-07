@@ -14,6 +14,7 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'ប្រព័ន្ធសុំច្បាប់អន្តេវាសិកដ្ឋាន',
           style: TextStyle(color: AppColor.sussessDark),
@@ -46,26 +47,28 @@ class HomeView extends GetView<HomeController> {
         ],
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                // -----------
-                Get.toNamed(Routes.LEAVE_HISTORY);
-              },
-              child: _buildSmallBoxRequestLeave(),
-            ),
-            const SizedBox(height: 15),
-            GestureDetector(
-              onTap: () {
-                // ------------
-                Get.toNamed(Routes.PAYMENT_HISTORY);
-              },
-              child: _buildSmallBoxPayment(),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // -----------
+                  Get.toNamed(Routes.LEAVE_HISTORY);
+                },
+                child: _buildSmallBoxRequestLeave(),
+              ),
+              const SizedBox(height: 15),
+              GestureDetector(
+                onTap: () {
+                  // ------------
+                  Get.toNamed(Routes.PAYMENT_HISTORY);
+                },
+                child: _buildSmallBoxPayment(),
+              ),
+            ],
+          ),
         ),
       ),
     );

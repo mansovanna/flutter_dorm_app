@@ -1,4 +1,5 @@
 import 'package:final_dromitory/app/constants/constants.dart';
+
 import 'package:final_dromitory/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,64 +7,18 @@ import 'package:get/get.dart';
 import '../controllers/leave_history_controller.dart';
 
 class LeaveHistoryView extends GetView<LeaveHistoryController> {
-  const LeaveHistoryView({super.key});
+  LeaveHistoryView({super.key});
+  @override
+  final controller = Get.put(LeaveHistoryController());
 
   @override
   Widget build(BuildContext context) {
-    final RxString selectedStatus = 'all'.obs;
-    final RxInt selectIndexStatus = 0.obs;
-
     // status for filter data from server
     final statusList = [
-      {'title': 'មើលទាំងអស់', 'status': 'All'},
-      {'title': 'រងចាំពិនិត្យ', 'status': 'Pending'},
-      {'title': 'បានអនុញ្ញាត', 'status': 'Approved'},
-      {'title': 'មិនអនុញ្ញាត', 'status': 'Rejected'},
-    ];
-
-    final requst_leave = [
-      {
-        "name": "Sovann Dara",
-        "student_id": '1100332244',
-        "admin": null,
-        "status": "Pending",
-      },
-      {
-        "name": "Sovann Dara",
-        "student_id": '1100332244',
-        "admin": "Sovanna",
-        "status": "Approved",
-      },
-      {
-        "name": "Sovann Dara",
-        "student_id": '1100332244',
-        "admin": "Sovanna",
-        "status": "Rejected",
-      },
-      {
-        "name": "Sovann Dara",
-        "student_id": '1100332244',
-        "admin": "Sovanna",
-        "status": "Rejected",
-      },
-      {
-        "name": "Sovann Dara",
-        "student_id": '1100332244',
-        "admin": "Sovanna",
-        "status": "Approved",
-      },
-      {
-        "name": "Sovann Dara",
-        "student_id": '1100332244',
-        "admin": "Sovanna",
-        "status": "Approved",
-      },
-      {
-        "name": "Sovann Dara",
-        "student_id": '1100332244',
-        "admin": "Sovanna",
-        "status": "Approved",
-      },
+      {'title': 'មើលទាំងអស់', 'status': ''}, // ✅ ប្តូរទៅ string ទទេ
+      {'title': 'រងចាំពិនិត្យ', 'status': 'pending'},
+      {'title': 'បានអនុញ្ញាត', 'status': 'approved'},
+      {'title': 'មិនអនុញ្ញាត', 'status': 'rejected'},
     ];
 
     // final controller = Get.put(LeaveHistoryController());
@@ -75,208 +30,253 @@ class LeaveHistoryView extends GetView<LeaveHistoryController> {
           'Back',
           style: TextStyle(fontSize: 20, fontFamily: AppFonts.poppins),
         ),
+
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(40),
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(color: Colors.white),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: statusList.length,
+              itemBuilder: (context, index) {
+                final statusStore = statusList[index];
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 7,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      // -------------
+                      controller.selectedStatus.value =
+                          statusStore['status'].toString();
+                      controller.selectIndexStatus.value = index;
+                      controller.getHistory(
+                        status: controller.selectedStatus.value,
+                      );
+                    },
+                    child: Obx(
+                      () => Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color:
+                              controller.selectIndexStatus.value == index
+                                  ? AppColor.sussessDark
+                                  : Colors.black12,
+                        ),
+                        child: Center(
+                          child: Text(
+                            statusStore['title'].toString(),
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  controller.selectIndexStatus.value == index
+                                      ? Colors.white
+                                      : AppColor.sussessDark,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
       ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: SingleChildScrollView(
-          // padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ---------- Filter Chips ----------
-              const SizedBox(height: 1),
-              Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(color: Colors.white),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: statusList.length,
-                  itemBuilder: (context, index) {
-                    final statusStore = statusList[index];
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    backgroundColor: Colors.grey,
+                    color: AppColor.sussessDark,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "សូមរងចាំ...",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            );
+          }
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 7,
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          // -------------
-                          selectedStatus.value =
-                              statusStore['status'].toString();
-                          selectIndexStatus.value = index;
-                        },
-                        child: Obx(
-                          () => Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color:
-                                  selectIndexStatus.value == index
-                                      ? AppColor.sussessDark
-                                      : Colors.black12,
-                            ),
-                            child: Center(
-                              child: Text(
-                                statusStore['title'].toString(),
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      selectIndexStatus.value == index
-                                          ? Colors.white
-                                          : AppColor.sussessDark,
-                                ),
-                              ),
-                            ),
+          if (controller.isMessage.value.isNotEmpty) {
+            return Text(controller.isMessage.value.toString());
+          }
+
+          if (controller.data_server.isEmpty) {
+            Text('Data not Response');
+          }
+
+          return RefreshIndicator.adaptive(
+            onRefresh: () async {
+              controller.getHistory(status: '');
+            },
+            child: SingleChildScrollView(
+              // padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ---------- Filter Chips ----------
+
+                  // ---------- Sample Data Preview ----------
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "All History Leave",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: AppFonts.poppins,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
 
-              // ---------- Sample Data Preview ----------
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "All History Leave",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: AppFonts.poppins,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        Text(
+                          "${controller.data_server.length} recoed",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: AppFonts.poppins,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
-
-                    Text(
-                      "4 recoed",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: AppFonts.poppins,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  children: [
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 1,
-                        mainAxisExtent: 95,
-                      ),
-                      itemCount: requst_leave.length,
-                      itemBuilder: (context, index) {
-                        final requestState = requst_leave[index];
-                        return GestureDetector(
-                          onTap: () {
-                            // ----------------
-                            Get.toNamed(
-                              Routes.DETAIL_LEAVE,
-                              arguments: {'status': requestState['status']},
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      children: [
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 1,
+                                mainAxisExtent: 95,
+                              ),
+                          itemCount: controller.data_server.length,
+                          itemBuilder: (context, index) {
+                            final requestState = controller.data_server[index];
+                            return GestureDetector(
+                              onTap: () {
+                                // ----------------
+                                Get.toNamed(
+                                  Routes.DETAIL_LEAVE,
+                                  arguments: {
+                                    'status': requestState.status,
+                                    'id': requestState.userId,
+                                    'index': index + 1,
+                                  },
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 85,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          requestState.status == "approved"
+                                              ? AppColor.succss
+                                              : requestState.status == 'pending'
+                                              ? AppColor.warning
+                                              : AppColor.danger,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${index + 1}",
+                                        style: TextStyle(
+                                          fontFamily: AppFonts.poppins,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      // width: 40,
+                                      height: 85,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(10),
+                                          bottomRight: Radius.circular(10),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // --------------
+                                            Text(
+                                              requestState.userName.toString(),
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Text(
+                                              "លេខសម្គាល់៖ ${requestState.studentId}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 3),
+                                            Text(
+                                              "អ្នកត្រួតពិនិត្យ៖ ${requestState.adminUsername ?? 'កំពុងរង់ចាំពិនិត្យ'}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           },
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 85,
-                                decoration: BoxDecoration(
-                                  color:
-                                      requestState['status'] == "Approved"
-                                          ? AppColor.succss
-                                          : requestState['status'] == 'Pending'
-                                          ? AppColor.warning
-                                          : AppColor.danger,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10),
-                                    bottomLeft: Radius.circular(10),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "${index + 1}",
-                                    style: TextStyle(
-                                      fontFamily: AppFonts.poppins,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  // width: 40,
-                                  height: 85,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(10),
-                                      bottomRight: Radius.circular(10),
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // --------------
-                                        Text(
-                                          requestState['name'].toString(),
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "លេខសម្គាល់៖ ${requestState['student_id'] ?? 'កំពុងរង់ចាំពិនិត្យ'}",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.normal,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          "អ្នកត្រួតពិនិត្យ៖ ${requestState['admin'] ?? 'កំពុងរង់ចាំពិនិត្យ'}",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.normal,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        }),
       ),
 
       floatingActionButton: ElevatedButton(
@@ -496,12 +496,21 @@ class LeaveHistoryView extends GetView<LeaveHistoryController> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        Get.back();
-                        Get.snackbar(
-                          'ជោគជ័យ',
-                          'បានបញ្ជូនសំណើររួចរាល់',
-                          backgroundColor: AppColor.sussessDark,
-                          colorText: Colors.white,
+                        // Get.back();
+                        // Get.snackbar(
+                        //   'ជោគជ័យ',
+                        //   'បានបញ្ជូនសំណើររួចរាល់',
+                        //   backgroundColor: AppColor.sussessDark,
+                        //   colorText: Colors.white,
+                        // );
+
+                        controller.post(
+                          username: nameController.text.trim(),
+                          student_id: idController.text,
+                          start_day: fromDateController.text.trim(),
+                          first_day: toDateController.text.trim(),
+                          total_day: daysController.text.trim(),
+                          description: reasonController.text.trim(),
                         );
                       }
                     },

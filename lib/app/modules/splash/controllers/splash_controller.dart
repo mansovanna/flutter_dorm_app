@@ -1,33 +1,21 @@
-import 'dart:async';
+import 'package:final_dromitory/app/modules/account/controllers/account_controller.dart';
 
-import 'package:final_dromitory/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController {
-  //TODO: Implement SplashController
-
+  late final AccountController accountController;
+  final isLoading = false.obs;
+  final RxString imageUrl = "".obs;
+  final RxString username = "".obs;
+  final RxString student_id = "".obs;
 
   @override
   void onInit() {
-    duration();
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void duration ()async {
-    Future.delayed(const Duration(seconds: 5), () {
-
-     Get.toNamed(Routes.LOGIN);
-     update();
-    });
+    if (!Get.isRegistered<AccountController>()) {
+      Get.put(AccountController());
+    }
+    accountController = Get.find<AccountController>();
+    Future.delayed(Duration(seconds: 2), () => accountController.getUser());
   }
 }

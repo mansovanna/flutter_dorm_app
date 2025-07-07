@@ -9,7 +9,8 @@ class SplashView extends GetView<SplashController> {
   const SplashView({super.key});
   @override
   Widget build(BuildContext context) {
-    controller.duration();
+    Get.put(SplashController());
+    // controller.getUser();
     return Scaffold(
       body: SafeArea(
         child: Stack(

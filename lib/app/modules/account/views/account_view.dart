@@ -1,4 +1,5 @@
 import 'package:final_dromitory/app/constants/constants.dart';
+
 import 'package:final_dromitory/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,7 +9,9 @@ import 'package:get/get.dart';
 import '../controllers/account_controller.dart';
 
 class AccountView extends GetView<AccountController> {
-  const AccountView({super.key});
+  AccountView({super.key});
+
+  final controller = Get.put(AccountController());
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
@@ -181,21 +184,25 @@ class AccountView extends GetView<AccountController> {
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundImage: NetworkImage(
-                "https://img.88icon.com/download/jpg/20201108/f7db1ba5cd4fa9b1d0664c66e497610b_512_512.jpg!bg",
-              ),
+              backgroundImage:
+                  controller.imageUrl.isNotEmpty
+                      ? NetworkImage(
+                        '$baseUrlImage/${controller.imageUrl.string}',
+                      )
+                      : const AssetImage('assets/images/profile.png')
+                          as ImageProvider,
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "សុវណ្ណា ដារ៉ា",
+                  "${controller.username}",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  "ID: 1100224422",
+                  "ID: ${controller.student_id}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
@@ -288,6 +295,7 @@ class AccountView extends GetView<AccountController> {
         height: 24,
         color: Colors.black,
       ),
+      onTap: controller.logout,
     );
   }
 
